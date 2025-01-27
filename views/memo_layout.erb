@@ -1,0 +1,7 @@
+<form class="memo" method="post" action="?">
+  <input class="memoTitle" type="text" name="title" id="title" value="<%= h(@title) %>" <%= "disabled" if @is_disable_textbox %>>
+  <textarea class="memoBody" name="body" id="body" <%= "disabled" if @is_disable_textbox %>><%= h(@body) %></textarea>
+  <nav>
+    <%= yield %>
+  </nav>
+</form>
