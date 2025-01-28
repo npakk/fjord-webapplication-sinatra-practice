@@ -1,5 +1,5 @@
 <ul>
   <% @memos.each do |memo| %>
-    <li><a href="/memos/<%= memo['id'] %>?q=show"><%= h(memo.dig('data','title')) %></a></li>
+    <li><a href="/memos/<%= memo['id'] %>/show"><%= h(memo.dig('data','title')) %></a></li>
   <% end %>
 </ul>

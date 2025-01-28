@@ -33,24 +33,35 @@ end
 
 post '/memos' do
   id = Memo.create(params[:title], params[:body])
-  redirect "/memos/#{id}?q=show"
+  redirect "/memos/#{id}/show"
 end
 
-get '/memos/:id' do
+get '/memos/:id/show' do
   @id = params['id'].to_i
   memo, = Memo.read(@id)
-  @is_disable_textbox = params['q'] != 'edit'
+  @is_disable_textbox = true
   @title = memo.dig('data', 'title')
   @body = memo.dig('data', 'body')
   erb :memo_layout, layout: true do
-    erb params['q'] == 'show' ? :show : :edit
+    erb :show
+  end
+end
+
+get '/memos/:id/edit' do
+  @id = params['id'].to_i
+  memo, = Memo.read(@id)
+  @is_disable_textbox = false
+  @title = memo.dig('data', 'title')
+  @body = memo.dig('data', 'body')
+  erb :memo_layout, layout: true do
+    erb :edit
   end
 end
 
 patch '/memos/:id' do
   id = params['id'].to_i
   Memo.update(id, params['title'], params['body'])
-  redirect "/memos/#{id}?q=show"
+  redirect "/memos/#{id}/show"
 end
 
 delete '/memos/:id' do
