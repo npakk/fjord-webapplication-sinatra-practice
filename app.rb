@@ -39,6 +39,7 @@ end
 get '/memos/:id/show' do
   @id = params['id'].to_i
   memo, = Memo.read(@id)
+  @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
   @is_disable_textbox = true
   @title = memo.dig('data', 'title')
   @body = memo.dig('data', 'body')
@@ -50,6 +51,7 @@ end
 get '/memos/:id/edit' do
   @id = params['id'].to_i
   memo, = Memo.read(@id)
+  @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
   @is_disable_textbox = false
   @title = memo.dig('data', 'title')
   @body = memo.dig('data', 'body')
