@@ -17,7 +17,7 @@ end
 get '/' do
   @page_title = "#{APP_NAME}：トップ"
   @is_show_add_button = true
-  memos, = Memo.read
+  memos = Memo.read_all
   @memos = memos.reject do |memo|
     memo['is_delete']
   end
@@ -38,7 +38,7 @@ end
 
 get '/memos/:id/show' do
   @id = params['id'].to_i
-  memo, = Memo.read(@id)
+  memo = Memo.read(@id)
   @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
   @is_disable_textbox = true
   @title = memo.dig('data', 'title')
@@ -50,7 +50,7 @@ end
 
 get '/memos/:id/edit' do
   @id = params['id'].to_i
-  memo, = Memo.read(@id)
+  memo = Memo.read(@id)
   @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
   @is_disable_textbox = false
   @title = memo.dig('data', 'title')
@@ -79,28 +79,32 @@ class Memo
   end
 
   def self.create(title, body)
-    memos, next_id = read
-    memo = { id: next_id, data: { title: title, body: body }, is_delete: false }
+    memos = read_all
+    new_id = memos.empty? ? 0 : memos.last['id'] + 1
+    memo = { id: new_id, data: { title: title, body: body }, is_delete: false }
     memos.push(memo)
     write(memos)
-    next_id
+    new_id
   end
 
-  def self.read(id = nil)
-    return [], 0 unless File.exist?(MEMO_FILE)
+  def self.read_all
+    return [] unless File.exist?(MEMO_FILE)
 
     File.open(MEMO_FILE, 'r') do |f|
-      data = JSON.parse(f.read)
-      return data, data.last['id'] + 1 if id.nil?
+      JSON.parse(f.read)
+    end
+  end
 
-      data.find do |memo|
-        memo['id'] == id
-      end
+  def self.read(id)
+    memos = read_all
+
+    memos.find do |memo|
+      memo['id'] == id
     end
   end
 
   def self.update(id, title, body)
-    memos, = read
+    memos = read_all
 
     memos.each do |memo|
       if memo['id'] == id
@@ -113,7 +117,7 @@ class Memo
   end
 
   def self.delete(id)
-    memos, = read
+    memos = read_all
 
     memos.each do |memo|
       memo['is_delete'] = true if memo['id'] == id
