@@ -35,9 +35,7 @@ error do
 
   @title = params[:title]
   @body = params[:body]
-  erb :memo_layout, layout: true do
-    erb new? ? :new : :edit
-  end
+  erb new? ? :new : :edit
 end
 
 get '/' do
@@ -52,9 +50,7 @@ end
 
 get '/memos' do
   @page_title = "#{APP_NAME}：新規作成"
-  erb :memo_layout, layout: true do
-    erb :new
-  end
+  erb :new
 end
 
 post '/memos' do
@@ -71,9 +67,7 @@ get '/memos/:id/show' do
   @is_disable_textbox = true
   @title = memo.dig('data', 'title')
   @body = memo.dig('data', 'body')
-  erb :memo_layout, layout: true do
-    erb :show
-  end
+  erb :show
 end
 
 get '/memos/:id/edit' do
@@ -83,9 +77,7 @@ get '/memos/:id/edit' do
   @is_disable_textbox = false
   @title = memo.dig('data', 'title')
   @body = memo.dig('data', 'body')
-  erb :memo_layout, layout: true do
-    erb :edit
-  end
+  erb :edit
 end
 
 patch '/memos/:id/edit' do
