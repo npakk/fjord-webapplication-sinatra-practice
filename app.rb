@@ -4,13 +4,39 @@ require 'json'
 require 'sinatra'
 require 'sinatra/reloader'
 require 'rack'
+require 'debug'
 
 APP_NAME = 'メモアプリ'
 MEMO_FILE = 'memos.json'
 
+set :show_exceptions, false
+
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
+  end
+
+  def new?
+    params['id'].nil?
+  end
+end
+
+error do
+  status 400
+  @error_msg = env['sinatra.error']
+
+  if new?
+    @page_title = "#{APP_NAME}：新規作成"
+  else
+    @id = params['id'].to_i
+    memo = Memo.read(@id)
+    @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
+  end
+
+  @title = params[:title]
+  @body = params[:body]
+  erb :memo_layout, layout: true do
+    erb new? ? :new : :edit
   end
 end
 
@@ -32,6 +58,8 @@ get '/memos' do
 end
 
 post '/memos' do
+  raise 'タイトルは必須入力です。' if params[:title].empty?
+
   id = Memo.create(params[:title], params[:body])
   redirect "/memos/#{id}/show"
 end
@@ -60,7 +88,9 @@ get '/memos/:id/edit' do
   end
 end
 
-patch '/memos/:id' do
+patch '/memos/:id/edit' do
+  raise 'タイトルは必須入力です。' if params[:title].empty?
+
   id = params['id'].to_i
   Memo.update(id, params['title'], params['body'])
   redirect "/memos/#{id}/show"

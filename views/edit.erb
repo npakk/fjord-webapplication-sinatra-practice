@@ -1,2 +1,2 @@
 <input type="hidden" name="_method" value="patch">
-<button onclick="if(document.getElementById('title').value==''){alert('タイトルを入力してください。'); return false}" formaction="/memos/<%= @id %>">変更</button>
+<button formaction="/memos/<%= @id %>/edit">変更</button>
