@@ -4,7 +4,6 @@ require 'json'
 require 'sinatra'
 require 'sinatra/reloader'
 require 'rack'
-require 'debug'
 
 APP_NAME = 'メモアプリ'
 MEMO_FILE = 'memos.json'
