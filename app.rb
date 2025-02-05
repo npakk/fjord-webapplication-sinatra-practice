@@ -39,7 +39,6 @@ end
 
 get '/' do
   @page_title = "#{APP_NAME}：トップ"
-  @is_show_add_button = true
   memos = Memo.read_all
   @memos = memos.reject do |memo|
     memo['is_delete']

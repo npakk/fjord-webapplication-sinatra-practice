@@ -5,19 +5,6 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1 class="appName"><a href="/"><%= APP_NAME %></a></h1>
-    <% if @is_show_add_button then %>
-      <nav>
-        <button onclick="location.href='/memos'">追加</button>
-      </nav>
-    <% end %>
-  </header>
-  <section>
-    <p class="error_msg"><%= @error_msg %></p>
-  </section>
-  <main>
-    <%= yield %>
-  </main>
+  <%= yield %>
 </body>
 </html>

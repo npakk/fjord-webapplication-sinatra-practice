@@ -1,5 +1,9 @@
-<ul>
-  <% @memos.each do |memo| %>
-    <li><a href="/memos/<%= memo['id'] %>/show"><%= h(memo.dig('data','title')) %></a></li>
-  <% end %>
-</ul>
+<%= erb :_app_name_with_add_button %>
+<%= erb :_err_message %>
+<main>
+  <ul>
+    <% @memos.each do |memo| %>
+      <li><a href="/memos/<%= memo['id'] %>/show"><%= h(memo.dig('data','title')) %></a></li>
+    <% end %>
+  </ul>
+</main>
