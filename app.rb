@@ -14,27 +14,10 @@ helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
-
-  def new?
-    params['id'].nil?
-  end
 end
 
-error do
-  status 400
-  @error_msg = env['sinatra.error']
-
-  if new?
-    @page_title = "#{APP_NAME}：新規作成"
-  else
-    @id = params['id'].to_i
-    memo = Memo.read(@id)
-    @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
-  end
-
-  @title = params[:title]
-  @body = params[:body]
-  erb new? ? :new : :edit
+error 404 do
+  halt erb :not_found
 end
 
 get '/' do
@@ -52,7 +35,12 @@ get '/memos' do
 end
 
 post '/memos' do
-  raise 'タイトルは必須入力です。' if params[:title].empty?
+  if params[:title].empty?
+    @page_title = "#{APP_NAME}：新規作成"
+    @error_msg = 'タイトルは必須入力です。'
+    @body = params[:body]
+    halt erb :new
+  end
 
   id = Memo.create(params[:title], params[:body])
   redirect "/memos/#{id}/show"
@@ -77,11 +65,18 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id/edit' do
-  raise 'タイトルは必須入力です。' if params[:title].empty?
+  @id = params['id'].to_i
 
-  id = params['id'].to_i
-  Memo.update(id, params['title'], params['body'])
-  redirect "/memos/#{id}/show"
+  if params[:title].empty?
+    memo = Memo.read(@id)
+    @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
+    @error_msg = 'タイトルは必須入力です。'
+    @body = params[:body]
+    halt erb :edit
+  end
+
+  Memo.update(@id, params['title'], params['body'])
+  redirect "/memos/#{@id}/show"
 end
 
 delete '/memos/:id' do
