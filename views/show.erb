@@ -1,0 +1,13 @@
+<%= erb :_app_name %>
+<%= erb :_err_message %>
+<main>
+  <form class="memo" method="post" action="?">
+    <input class="memoTitle" type="text" name="title" id="title" value="<%= h(@title) %>" disabled>
+    <textarea class="memoBody" name="body" id="body" disabled><%= h(@body) %></textarea>
+    <nav>
+      <button type="button" onclick="location.href='/memos/<%= @id %>/edit'">変更</button>
+      <input type="hidden" name="_method" value="delete">
+      <button onclick="if(!confirm('削除します。よろしいですか？')){return false}" formaction="/memos/<%= @id %>">削除</button>
+    </nav>
+  </form>
+</main>

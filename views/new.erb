@@ -1,0 +1,11 @@
+<%= erb :_app_name %>
+<%= erb :_err_message %>
+<main>
+  <form class="memo" method="post" action="/memos">
+    <input class="memoTitle" type="text" name="title" id="title" value="<%= h(@title) %>">
+    <textarea class="memoBody" name="body" id="body"><%= h(@body) %></textarea>
+    <nav>
+      <button type="submit">保存</button>
+    </nav>
+  </form>
+</main>
