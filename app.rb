@@ -10,6 +10,10 @@ MEMO_FILE = 'memos.json'
 
 set :show_exceptions, false
 
+before do
+  @error_messages = {}
+end
+
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
@@ -35,15 +39,19 @@ get '/memos' do
 end
 
 post '/memos' do
-  if params[:title].empty?
-    @page_title = "#{APP_NAME}：新規作成"
-    @error_msg = 'タイトルは必須入力です。'
-    @body = params[:body]
-    halt erb :new
-  end
+  @error_messages[:title] = 'タイトルは必須入力です。' if params[:title].empty?
+  @error_messages[:body] = '本文は必須入力です。' if params[:body].empty?
 
-  id = Memo.create(params[:title], params[:body])
-  redirect "/memos/#{id}/show"
+  if @error_messages.empty?
+    id = Memo.create(params[:title], params[:body])
+    redirect "/memos/#{id}/show"
+  else
+    # エラー時に入力内容は初期化せず復元する
+    @title = params[:title]
+    @body = params[:body]
+
+    body erb :new
+  end
 end
 
 get '/memos/:id/show' do
@@ -65,18 +73,21 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id/edit' do
+  @error_messages[:title] = 'タイトルは必須入力です。' if params[:title].empty?
+  @error_messages[:body] = '本文は必須入力です。' if params[:body].empty?
+
   @id = params['id'].to_i
 
-  if params[:title].empty?
-    memo = Memo.read(@id)
-    @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
-    @error_msg = 'タイトルは必須入力です。'
+  if @error_messages.empty?
+    Memo.update(@id, params['title'], params['body'])
+    redirect "/memos/#{@id}/show"
+  else
+    # エラー時に入力内容は初期化せず復元する
+    @title = params[:title]
     @body = params[:body]
-    halt erb :edit
-  end
 
-  Memo.update(@id, params['title'], params['body'])
-  redirect "/memos/#{@id}/show"
+    body erb :edit
+  end
 end
 
 delete '/memos/:id' do
