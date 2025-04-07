@@ -4,6 +4,7 @@ require 'json'
 require 'sinatra'
 require 'sinatra/reloader'
 require 'rack'
+require 'pg'
 
 APP_NAME = 'メモアプリ'
 MEMO_FILE = 'memos.json'
@@ -96,6 +97,13 @@ delete '/memos/:id' do
 end
 
 class Memo
+  @conn = PG.connect(
+    host: 'localhost',
+    port: 5432,
+    dbname: 'sinatra_app',
+    user: 'postgres'
+  )
+
   def self.write(memos)
     File.open(MEMO_FILE, 'w') do |f|
       JSON.dump(memos, f)
