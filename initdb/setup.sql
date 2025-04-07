@@ -3,5 +3,6 @@ create database sinatra_app;
 create table memos (
   id serial PRIMARY KEY,
   title text NOT NULL,
-  body text NOT NULL
+  body text NOT NULL,
+  is_delete boolean NOT NULL
 );
