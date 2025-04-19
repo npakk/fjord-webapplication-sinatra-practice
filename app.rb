@@ -5,6 +5,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'rack'
 require 'pg'
+require 'dotenv/load' if ENV['ENVIRONMENT'] == 'development'
 
 APP_NAME = 'メモアプリ'
 MEMO_FILE = 'memos.json'
@@ -101,7 +102,8 @@ class Memo
     host: 'localhost',
     port: 5432,
     dbname: 'sinatra_app',
-    user: 'postgres'
+    user: ENV['DB_USER'],
+    password: ENV['DB_PASSWORD']
   )
 
   def self.write(memos)
