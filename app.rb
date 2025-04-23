@@ -103,18 +103,8 @@ class Memo
     password: ENV['DB_PASSWORD']
   )
 
-  def self.write(memos)
-    File.open(MEMO_FILE, 'w') do |f|
-      JSON.dump(memos, f)
-    end
-  end
-
   def self.create(title, body)
-    memos = read_all
-    new_id = memos.empty? ? 0 : memos.last['id'] + 1
-    memo = { id: new_id, data: { title: title, body: body }, is_delete: false }
-    memos.push(memo)
-    write(memos)
+    @conn.exec('INSERT INTO memos (title, body, is_delete) VALUES ($1, $2, FALSE)', [title, body])
     new_id
   end
 
