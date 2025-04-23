@@ -28,10 +28,7 @@ end
 
 get '/' do
   @page_title = "#{APP_NAME}：トップ"
-  memos = Memo.read_all
-  @memos = memos.reject do |memo|
-    memo['is_delete']
-  end
+  @memos = Memo.read_all
   erb :index
 end
 
@@ -122,11 +119,7 @@ class Memo
   end
 
   def self.read_all
-    return [] unless File.exist?(MEMO_FILE)
-
-    File.open(MEMO_FILE, 'r') do |f|
-      JSON.parse(f.read)
-    end
+    @conn.exec('SELECT id::int, title::text, body::text FROM memos WHERE is_delete = FALSE;').to_a
   end
 
   def self.read(id)
