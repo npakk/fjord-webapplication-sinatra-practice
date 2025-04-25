@@ -119,26 +119,18 @@ class Memo
     end
   end
 
+  def self.new_id
+    memo = @conn.exec('SELECT * FROM memos ORDER BY id DESC LIMIT 1;')
+    return 0 if memo.count.zero?
+
+    memo.first['id']
+  end
+
   def self.update(id, title, body)
-    memos = read_all
-
-    memos.each do |memo|
-      if memo['id'] == id
-        memo['data']['title'] = title
-        memo['data']['body'] = body
-      end
-    end
-
-    write(memos)
+    @conn.exec('UPDATE memos SET title = $2, body = $3 WHERE id = $1', [id, title, body])
   end
 
   def self.delete(id)
-    memos = read_all
-
-    memos.each do |memo|
-      memo['is_delete'] = true if memo['id'] == id
-    end
-
-    write(memos)
+    @conn.exec('UPDATE memos SET is_delete = TRUE WHERE id = $1', [id])
   end
 end
