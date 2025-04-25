@@ -28,7 +28,7 @@ end
 
 get '/' do
   @page_title = "#{APP_NAME}：トップ"
-  @memos = Memo.read_all
+  @memos = Memo.read
   erb :index
 end
 
@@ -56,18 +56,18 @@ end
 get '/memos/:id/show' do
   @id = params['id'].to_i
   memo = Memo.read(@id)
-  @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
-  @title = memo.dig('data', 'title')
-  @body = memo.dig('data', 'body')
+  @page_title = "#{APP_NAME}：#{memo['title']}"
+  @title = memo['title']
+  @body = memo['body']
   erb :show
 end
 
 get '/memos/:id/edit' do
   @id = params['id'].to_i
   memo = Memo.read(@id)
-  @page_title = "#{APP_NAME}：#{memo.dig('data', 'title')}"
-  @title = memo.dig('data', 'title')
-  @body = memo.dig('data', 'body')
+  @page_title = "#{APP_NAME}：#{memo['title']}"
+  @title = memo['title']
+  @body = memo['body']
   erb :edit
 end
 
@@ -108,15 +108,14 @@ class Memo
     new_id
   end
 
-  def self.read_all
-    @conn.exec('SELECT id::int, title::text, body::text FROM memos WHERE is_delete = FALSE;').to_a
-  end
+  def self.read(id = nil)
+    base_sql = 'SELECT id::int, title::text, body::text FROM memos WHERE is_delete = FALSE'
+    order_sql = ' ORDER BY id;'
 
-  def self.read(id)
-    memos = read_all
-
-    memos.find do |memo|
-      memo['id'] == id
+    if id
+      @conn.exec("#{base_sql} AND id = $1 #{order_sql}", [id]).first
+    else
+      @conn.exec("#{base_sql} #{order_sql}")
     end
   end
 
