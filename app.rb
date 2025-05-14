@@ -104,8 +104,7 @@ class Memo
   )
 
   def self.create(title, body)
-    @conn.exec('INSERT INTO memos (title, body, is_delete) VALUES ($1, $2, FALSE)', [title, body])
-    new_id
+    @conn.exec('INSERT INTO memos (title, body, is_delete) VALUES ($1, $2, FALSE) RETURNING id', [title, body]).first['id']
   end
 
   def self.read(id = nil)
@@ -117,13 +116,6 @@ class Memo
     else
       @conn.exec("#{base_sql} #{order_sql}")
     end
-  end
-
-  def self.new_id
-    memo = @conn.exec('SELECT * FROM memos ORDER BY id DESC LIMIT 1;')
-    return 0 if memo.count.zero?
-
-    memo.first['id']
   end
 
   def self.update(id, title, body)
