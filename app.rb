@@ -109,7 +109,7 @@ class Memo
   end
 
   def self.read(id = nil)
-    base_sql = 'SELECT id::int, title::text, body::text FROM memos WHERE is_delete = FALSE'
+    base_sql = 'SELECT id, title, body FROM memos WHERE is_delete = FALSE'
     order_sql = ' ORDER BY id;'
 
     if id
